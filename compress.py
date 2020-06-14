@@ -42,7 +42,7 @@ class Huffman:
             # Save input file to original
             self.original= file.read()
         self.word_frequency= Counter(self.original)
-        print(len(self.word_frequency))
+
 
     def create_heap(self):
         for word in self.word_frequency:
@@ -84,7 +84,6 @@ class Huffman:
     def print_mapping(self):
         # Print out the mapping as the homework instructed
         for i in self.mapping:
-            print(i)
             print(i, end =":")
             print(self.mapping[i], end =" ")
         print("DONE")

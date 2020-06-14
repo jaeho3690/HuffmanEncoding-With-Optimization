@@ -45,8 +45,9 @@ class OptHuffman:
             self.original= file.read()
         self.word_frequency= Counter(self.original)
 
-    def word_count(self,n=20):
+    def word_count(self,n=200):
         # It counts the words not the alphabet
+        print("Top {} most popular words".format(n))
         counts = dict()
         words = self.original.split()
 
@@ -56,6 +57,12 @@ class OptHuffman:
             else:
                 counts[word] = 1
         self.top_n_vocab = dict(Counter(counts).most_common(n))
+        # Add '\n' as this is the most frequently happening
+        res = list(self.top_n_vocab.keys())
+        for key in res:
+            if len(key)==1:
+                self.top_n_vocab.pop(key)
+        self.top_n_vocab['\n']=10000
         self.word_frequency.update(self.top_n_vocab)
 
     def create_heap(self):
@@ -92,17 +99,16 @@ class OptHuffman:
 
     def encode_txt(self):
         split = self.original.splitlines(keepends=True)
+
         for lines in split:
             words =  [i for j in lines.split() for i in (j, ' ')][:-1]
-            words.append('/n')
+            words.append('\n')
             for word in words:
                 if word in self.top_n_vocab:
-                    self.encoded_txt+=word
+                    self.encoded_txt+=self.mapping[word]
                 else:
                     for alphabet in word:
                         self.encoded_txt+= self.mapping[alphabet]
-            break
-        print("THIS IS THE FIRST",self.encoded_txt)
 
 
     def print_mapping(self):
@@ -112,8 +118,68 @@ class OptHuffman:
             print(self.mapping[i], end =" ")
         print('\n')
 
+    def add_padding(self):
+        # The computer will add random bits to the end if the whole length is not a multiple of 8
+        # This function will also encode the data into byte
+        numbers_of_padding = 8- len(self.encoded_txt)%8
+
+        for i in range(numbers_of_padding):
+            self.encoded_txt +='0'
+        
+        padding_info = "{0:08b}".format(numbers_of_padding)
+        print("PADDING INFO",padding_info)
+        self.encoded_txt = padding_info+self.encoded_txt
+
+        assert len(self.encoded_txt)%8==0 
+
+        self.encoded_byte= bytearray()
+
+        
+        for i in range(0,len(self.encoded_txt),8):
+            byte = self.encoded_txt[i:i+8]
+            self.encoded_byte.append(int(byte,2))
+        self.encoded_byte = bytes(self.encoded_byte)
+        
+
+    def compare_file_size(self,original_txt,compressed_file):
+        # Utility function to compare the change in file size
+        original = os.path.getsize(original_txt)
+        compressed = os.path.getsize(compressed_file)
+        print("File size compressed from {} byte to {} byte".format(original,compressed))
+        proportion = (compressed/ original)*100
+
+        print("Compressed proportion {:.2f}%".format(proportion))        
+        
+    def save_encoded_bin(self):
+        start_time = time.time()
+        self.add_padding()
+        # Write mapping information
+        mapping_table = open('./data/optcompress.bin','wb')
+        mapped_info = str(self.mapping)
+        mapping_table.write(mapped_info.encode())
+        mapping_table.close()
+
+        # create a separating line
+        seperate_line = open('./data/optcompress.bin','a')
+        seperate_line.write('\n')
+        seperate_line.close()
+
+        # write encoded txt to file
+        encoded_line = open('./data/optcompress.bin','ab')
+        encoded_line.write(self.encoded_byte)
+        encoded_line.close()
+
+        self.encoding_time = time.time()- start_time
+        # The whole structure is as follow
+        #  Mapping + '/n' + Padding_info + encoded txt 
+        print("Saved binary file to '/data' directory")
+
+        self.compare_file_size(self.input_path,'./data/optcompress.bin')
+        print("Encoding Time was {} ".format(self.encoding_time))
+
 def main():
     Opt = OptHuffman('./data/input.txt')
+    Opt.save_encoded_bin()
 
 if __name__ == "__main__":
     main()
