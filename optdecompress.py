@@ -10,10 +10,7 @@ def read_txt(input):
         data= file.read()
     return data
 
-
-
-
-class DecodeHuffman:
+class OptimizedDecodeHuffman:
     def __init__(self,encoded_huffman_path):
         self.huffman_file = encoded_huffman_path
         self.huffman_decoded_bits =""
@@ -29,18 +26,18 @@ class DecodeHuffman:
         self.huffman_decoded_bits = self.huffman_decoded_bits[8:-padding_num]
     
     def writetxt(self):
-        output = open('decompressed.txt','w')
+        output = open('optdecompressed.txt','w')
         output.write(self.restored_txt)
         output.close()
-        print("saved to decompressed.txt")
+        print("saved to optdecompressed.txt")
         
     
     def compare_with_original(self,input='./data/input.txt'):
         print("Sanity Check,,,")
         with open(input)as file:
             input_original =file.read()
-        print("Original Length",len(input_original))
-        print("Restored Length",len(self.restored_txt))
+        print("RESTORED LENGTH:",len(self.restored_txt))
+        print("ORIGINAL LENGTH:",len(input_original))
         if input_original == self.restored_txt:
             print("The restored file is same as original input file.")
         else:
@@ -81,7 +78,7 @@ class DecodeHuffman:
 
 
 def main():
-    DecodeHuff= DecodeHuffman('./data/compress.bin')
+    DecodeHuff= OptimizedDecodeHuffman('./data/optcompress.bin')
     DecodeHuff.decompress()
 
 if __name__ == "__main__":

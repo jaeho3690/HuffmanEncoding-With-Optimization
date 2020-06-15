@@ -17,8 +17,10 @@ class Node:
 
 
 class OptHuffman:
-    def __init__(self,input_path):
+    # Opitmized by creating binary code for frequently appearing words
+    def __init__(self,input_path,output_path='./data/optcompress.bin' ):
         self.input_path = input_path
+        self.output_path= output_path
         self.original = None
         self.word_frequency = dict()
         self.top_n_vocab = dict()
@@ -40,28 +42,35 @@ class OptHuffman:
         self.encode_txt()
 
     def read_txt(self):
+        # Read Txt that needs to be encoded
         with open(self.input_path)as file:
             # Save input file to original
             self.original= file.read()
         self.word_frequency= Counter(self.original)
 
     def word_count(self,n=200):
-        # It counts the words not the alphabet
-        print("Top {} most popular words".format(n))
+        """In ordinary huffman encoding, the code reads alphabet by alphabets. The optimized version reads both word and alphabet
+        It will first make a dictionary of n most popular words. If the words are in this dictionary, the words are replaced with the encoding
+        Otherwise, we follow the normal Huffman encoding
+        Args:
+            n: Top n most popular words
+        """
+        print("Using top {} most popular words".format(n))
         counts = dict()
         words = self.original.split()
-
+        # Create word dictionary
         for word in words:
             if word in counts:
                 counts[word] += 1
             else:
                 counts[word] = 1
         self.top_n_vocab = dict(Counter(counts).most_common(n))
-        # Add '\n' as this is the most frequently happening
         res = list(self.top_n_vocab.keys())
+        # Some words such as I are already included in the normal Huffman encoding. We remove words with length 1
         for key in res:
             if len(key)==1:
                 self.top_n_vocab.pop(key)
+        # Add '\n' as this is the most frequently happening
         self.top_n_vocab['\n']=10000
         self.word_frequency.update(self.top_n_vocab)
 
@@ -101,8 +110,16 @@ class OptHuffman:
         split = self.original.splitlines(keepends=True)
 
         for lines in split:
-            words =  [i for j in lines.split() for i in (j, ' ')][:-1]
-            words.append('\n')
+            #print("1.LINES:",lines)
+            #print("2.LENGHT ",len(lines))
+            if lines.startswith(" "):
+                lines = lines.zfill(len(lines)+1)
+                words =  [i for j in lines.split(" ") for i in (j, ' ')][1:-1]
+            else:
+                #words =  [i for j in lines.split() for i in (j, ' ')][:-1]
+                words = [i for j in lines.split(" ") for i in (j," ") if i!=""][:-1]
+                #words.append('\n')
+            #print("3",words)
             for word in words:
                 if word in self.top_n_vocab:
                     self.encoded_txt+=self.mapping[word]
@@ -147,35 +164,38 @@ class OptHuffman:
         compressed = os.path.getsize(compressed_file)
         print("File size compressed from {} byte to {} byte".format(original,compressed))
         proportion = (compressed/ original)*100
-
+        self.original_file_size = original
+        self.compressed_file_size = compressed
+        self.compressed_proportion = proportion
         print("Compressed proportion {:.2f}%".format(proportion))        
         
     def save_encoded_bin(self):
         start_time = time.time()
         self.add_padding()
         # Write mapping information
-        mapping_table = open('./data/optcompress.bin','wb')
+        mapping_table = open(self.output_path,'wb')
         mapped_info = str(self.mapping)
         mapping_table.write(mapped_info.encode())
         mapping_table.close()
 
         # create a separating line
-        seperate_line = open('./data/optcompress.bin','a')
+        seperate_line = open(self.output_path,'a')
         seperate_line.write('\n')
         seperate_line.close()
 
         # write encoded txt to file
-        encoded_line = open('./data/optcompress.bin','ab')
+        encoded_line = open(self.output_path,'ab')
         encoded_line.write(self.encoded_byte)
         encoded_line.close()
 
         self.encoding_time = time.time()- start_time
         # The whole structure is as follow
         #  Mapping + '/n' + Padding_info + encoded txt 
-        print("Saved binary file to '/data' directory")
+        print("Saved binary file to {} directory".format(self.output_path))
 
-        self.compare_file_size(self.input_path,'./data/optcompress.bin')
+        self.compare_file_size(self.input_path,self.output_path)
         print("Encoding Time was {} ".format(self.encoding_time))
+        
 
 def main():
     Opt = OptHuffman('./data/input.txt')

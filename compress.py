@@ -5,6 +5,9 @@ import struct
 import ast
 import time
 
+# Many parts of this code was soruced from https://gist.github.com/mekhanix/b7c5395f4b1e1a7ea9dc377703bb6ce1
+# Jaeho Kim 
+# Kjh3690@unist.ac.kr
 
 class Node:
     def __init__(self,count,word):
@@ -13,12 +16,14 @@ class Node:
         self.left = None
         self.right = None
     def __lt__(self,other):
+        # Make the nodes comparable
         return self.count < other.count
 
 
 class Huffman:
-    def __init__(self,input_path):
+    def __init__(self,input_path,output_path='./data/compress.bin' ):
         self.input_path = input_path
+        self.output_path = output_path
         self.original = None
         self.mapping = {}
         self.reversed_mapping = {}
@@ -45,6 +50,7 @@ class Huffman:
 
 
     def create_heap(self):
+        # Create heap tree
         for word in self.word_frequency:
             node = Node(self.word_frequency[word],word)
             #print(self.word_frequency[word],word)
@@ -86,11 +92,11 @@ class Huffman:
         for i in self.mapping:
             print(i, end =":")
             print(self.mapping[i], end =" ")
-        print("DONE")
-        #print('\n')
+        print('\n')
 
     def add_padding(self):
-        # The computer will add random bits to the end if the whole length is not a multiple of 8
+        # The computer will add random bits to the end if the whole length is not a multiple of 8.
+        # We add an extra bits to the end and also append on the front of the data how many bits we added.
         # This function will also encode the data into byte
         numbers_of_padding = 8- len(self.encoded_txt)%8
 
@@ -98,14 +104,13 @@ class Huffman:
             self.encoded_txt +='0'
         
         padding_info = "{0:08b}".format(numbers_of_padding)
-        print("PADDING INFO",padding_info)
+        print("Number of bits added to the data in bits",padding_info)
         self.encoded_txt = padding_info+self.encoded_txt
 
         assert len(self.encoded_txt)%8==0 
 
         self.encoded_byte= bytearray()
 
-        
         for i in range(0,len(self.encoded_txt),8):
             byte = self.encoded_txt[i:i+8]
             self.encoded_byte.append(int(byte,2))
@@ -125,29 +130,28 @@ class Huffman:
         start_time = time.time()
         self.add_padding()
         # Write mapping information
-        mapping_table = open('./data/compress.bin','wb')
+        mapping_table = open(self.output_path,'wb')
         mapped_info = str(self.mapping)
         mapping_table.write(mapped_info.encode())
         mapping_table.close()
 
         # create a separating line
-        seperate_line = open('./data/compress.bin','a')
+        seperate_line = open(self.output_path,'a')
         seperate_line.write('\n')
         seperate_line.close()
 
         # write encoded txt to file
-        encoded_line = open('./data/compress.bin','ab')
+        encoded_line = open(self.output_path,'ab')
         encoded_line.write(self.encoded_byte)
         encoded_line.close()
 
         self.encoding_time = time.time()- start_time
         # The whole structure is as follow
         #  Mapping + '/n' + Padding_info + encoded txt 
-        print("Saved binary file to '/data' directory")
+        print("Saved binary file to {} directory".format(self.output_path))
 
-        self.compare_file_size(self.input_path,'./data/compress.bin')
+        self.compare_file_size(self.input_path,self.output_path)
         print("Encoding Time was {} ".format(self.encoding_time))
-
 
 
 
