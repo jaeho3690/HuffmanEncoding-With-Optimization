@@ -11,8 +11,10 @@ def read_txt(input):
     return data
 
 class OptimizedDecodeHuffman:
-    def __init__(self,encoded_huffman_path):
+    def __init__(self,encoded_huffman_path,original_path='./data/input.txt',output_path ='optdecompressed.txt'):
         self.huffman_file = encoded_huffman_path
+        self.original_path =original_path
+        self.output_path = output_path
         self.huffman_decoded_bits =""
         self.restored_txt =""
         self.mapping ={}
@@ -26,22 +28,23 @@ class OptimizedDecodeHuffman:
         self.huffman_decoded_bits = self.huffman_decoded_bits[8:-padding_num]
     
     def writetxt(self):
-        output = open('optdecompressed.txt','w')
+        output = open(self.output_path,'w')
         output.write(self.restored_txt)
         output.close()
-        print("saved to optdecompressed.txt")
+        print("saved to {}".format(self.output_path))
         
-    
-    def compare_with_original(self,input='./data/input.txt'):
-        print("Sanity Check,,,")
-        with open(input)as file:
+    def compare_with_original(self):
+        print(" ")
+        print("Sanity Checking,,,")
+        with open(self.original_path)as file:
             input_original =file.read()
-        print("RESTORED LENGTH:",len(self.restored_txt))
-        print("ORIGINAL LENGTH:",len(input_original))
+        print("Original Length",len(input_original))
+        print("Restored Length",len(self.restored_txt))
         if input_original == self.restored_txt:
             print("The restored file is same as original input file.")
         else:
             print("Restored File NOT EQUAL TO ORIGINAL INPUT")
+
 
 
 

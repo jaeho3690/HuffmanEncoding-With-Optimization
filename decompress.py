@@ -14,8 +14,10 @@ def read_txt(input):
 
 
 class DecodeHuffman:
-    def __init__(self,encoded_huffman_path):
+    def __init__(self,encoded_huffman_path,original_path='./data/input.txt',output_path='decompressed.txt'):
         self.huffman_file = encoded_huffman_path
+        self.original_path = original_path
+        self.output_path = output_path
         self.huffman_decoded_bits =""
         self.restored_txt =""
         self.mapping ={}
@@ -29,15 +31,15 @@ class DecodeHuffman:
         self.huffman_decoded_bits = self.huffman_decoded_bits[8:-padding_num]
     
     def writetxt(self):
-        output = open('decompressed.txt','w')
+        output = open(self.output_path,'w')
         output.write(self.restored_txt)
         output.close()
         print("saved to decompressed.txt")
         
     
-    def compare_with_original(self,input='./data/input.txt'):
+    def compare_with_original(self):
         print("Sanity Check,,,")
-        with open(input)as file:
+        with open(self.original_path)as file:
             input_original =file.read()
         print("Original Length",len(input_original))
         print("Restored Length",len(self.restored_txt))

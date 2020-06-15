@@ -32,6 +32,7 @@ class OptHuffman:
         self.encoded_byte = None
         self.encoding_time = 0
 
+        self.original_file_size =os.path.getsize(self.input_path)
 
         # main
         self.read_txt()
@@ -48,13 +49,19 @@ class OptHuffman:
             self.original= file.read()
         self.word_frequency= Counter(self.original)
 
-    def word_count(self,n=200):
+    def word_count(self):
         """In ordinary huffman encoding, the code reads alphabet by alphabets. The optimized version reads both word and alphabet
         It will first make a dictionary of n most popular words. If the words are in this dictionary, the words are replaced with the encoding
-        Otherwise, we follow the normal Huffman encoding
+        Otherwise, we follow the normal Huffman encoding. However, I have found out that we have to choose n based on file size. If the file is 
+        too small, n should be small as well.
         Args:
             n: Top n most popular words
         """
+        if self.original_file_size > 100000:
+            n=200
+        else:
+            n=50
+
         print("Using top {} most popular words".format(n))
         counts = dict()
         words = self.original.split()
@@ -77,7 +84,6 @@ class OptHuffman:
     def create_heap(self):
         for word in self.word_frequency:
             node = Node(self.word_frequency[word],word)
-            #print(self.word_frequency[word],word)
             heapq.heappush(self.min_heap,node)
 
         while len(self.min_heap) >1:
@@ -110,16 +116,11 @@ class OptHuffman:
         split = self.original.splitlines(keepends=True)
 
         for lines in split:
-            #print("1.LINES:",lines)
-            #print("2.LENGHT ",len(lines))
             if lines.startswith(" "):
                 lines = lines.zfill(len(lines)+1)
                 words =  [i for j in lines.split(" ") for i in (j, ' ')][1:-1]
             else:
-                #words =  [i for j in lines.split() for i in (j, ' ')][:-1]
                 words = [i for j in lines.split(" ") for i in (j," ") if i!=""][:-1]
-                #words.append('\n')
-            #print("3",words)
             for word in words:
                 if word in self.top_n_vocab:
                     self.encoded_txt+=self.mapping[word]
@@ -164,7 +165,6 @@ class OptHuffman:
         compressed = os.path.getsize(compressed_file)
         print("File size compressed from {} byte to {} byte".format(original,compressed))
         proportion = (compressed/ original)*100
-        self.original_file_size = original
         self.compressed_file_size = compressed
         self.compressed_proportion = proportion
         print("Compressed proportion {:.2f}%".format(proportion))        

@@ -116,16 +116,18 @@ class Huffman:
             self.encoded_byte.append(int(byte,2))
         self.encoded_byte = bytes(self.encoded_byte)
         
-
     def compare_file_size(self,original_txt,compressed_file):
         # Utility function to compare the change in file size
         original = os.path.getsize(original_txt)
         compressed = os.path.getsize(compressed_file)
         print("File size compressed from {} byte to {} byte".format(original,compressed))
         proportion = (compressed/ original)*100
+        self.original_file_size = original
+        self.compressed_file_size = compressed
+        self.compressed_proportion = proportion
+        print("Compressed file size is {:.2f} % of original file size ".format(proportion))        
 
-        print("Compressed proportion {:.2f}%".format(proportion))        
-        
+
     def save_encoded_bin(self):
         start_time = time.time()
         self.add_padding()
