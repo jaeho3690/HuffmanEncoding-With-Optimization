@@ -11,7 +11,7 @@ from optdecompress import OptimizedDecodeHuffman
 # Load all test cases
 test_cases = os.listdir('./testcases/Tests/')
 
-"""
+
 log= pd.DataFrame(index=[],columns= ['Name','File_Size','Encoded_File_Size','Encoding_Time','Compression_Proportion','Diversity_of_alphabets','Decoding_Time'])
 # test compress
 for test in test_cases:
@@ -40,13 +40,13 @@ for test in test_cases:
     print("Saved to csv")
     print("*"*44)
     print(" ")
-"""
+
 optimized_log= pd.DataFrame(index=[],columns= ['Name','File_Size','Optimized_Encoded_File_Size','Optimized_Encoding_Time','Optimized_Compression_Proportion','Diversity_of_alphabets','Optimized_Decoding_Time'])
 # test Optimized Compress
 
 for test in test_cases:
     print("*"*43)
-    print("********* TESTING for Optimized {} *********".format(test))
+    print("**** TESTING for Optimized {} *****".format(test))
     print("*"*43)
     OptHuff = OptHuffman(input_path= './testcases/Tests/{}'.format(test),output_path ='./testcases/OptCompressed/{}.bin'.format(test[:5]))
     OptHuff.save_encoded_bin()

@@ -159,10 +159,10 @@ class OptHuffman:
         self.encoded_byte = bytes(self.encoded_byte)
         
 
-    def compare_file_size(self,original_txt,compressed_file):
+    def compare_file_size(self):
         # Utility function to compare the change in file size
-        original = os.path.getsize(original_txt)
-        compressed = os.path.getsize(compressed_file)
+        original = os.path.getsize(self.input_path)
+        compressed = os.path.getsize(self.output_path)
         print("File size compressed from {} byte to {} byte".format(original,compressed))
         proportion = (compressed/ original)*100
         self.compressed_file_size = compressed
@@ -193,7 +193,7 @@ class OptHuffman:
         #  Mapping + '/n' + Padding_info + encoded txt 
         print("Saved binary file to {} directory".format(self.output_path))
 
-        self.compare_file_size(self.input_path,self.output_path)
+        self.compare_file_size()
         print("Encoding Time was {} ".format(self.encoding_time))
         
 
