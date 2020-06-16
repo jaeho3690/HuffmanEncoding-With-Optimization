@@ -6,8 +6,9 @@ This was our last homework for Into to Algorithm (CS331, prof Youngbin Lim). The
 4. Optdecompress.py   - Optimizied Huffman Encoding Decompression file
 
 There are many references of how to implement an ordinary huffman encoding file. This is the 
-![github](https://gist.github.com/mekhanix/b7c5395f4b1e1a7ea9dc377703bb6ce1) I used as a reference for coding the ordinary compress.py and decompress.py
+[github](https://gist.github.com/mekhanix/b7c5395f4b1e1a7ea9dc377703bb6ce1) I used as a reference for coding the ordinary compress.py and decompress.py
 
+# Optimization Idea
 For the Optimized version, I wasn't able to find many reference. There were papers that optimized by grouping words. But I didn't get how it works. So I had to come up with an original method. My ideas for optimization were as below and for people who may have studied Naive Bayes might easily understand the method.
 
 1. Each words in a txt file is usually not independent from other words inside the txt.
@@ -18,7 +19,7 @@ For the Optimized version, I wasn't able to find many reference. There were pape
 
 Somethings to note is that the optimal value of "N" would differ by txt files. Bigger number of N does not guarantee the performance of the optimization. However, I have noticed that txt files that are longer in length usually needs a N that is bigger than 200. Increasing this number may result in increased memory usage, so we must be careful of the tradeoff. In my implementation, I have chosed the N =200 for file size above 100kb, and N=50 otherwise.
 
-
+# File Structure
 The file structure is as below
 
 ```
