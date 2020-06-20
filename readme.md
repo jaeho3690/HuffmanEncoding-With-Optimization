@@ -64,3 +64,7 @@ test.py
 
 ![Decoding Time Comparison](/notebook/figures/Decoding_Time_Comparison.png)
 
+# Reference
+1. https://gist.github.com/mekhanix/b7c5395f4b1e1a7ea9dc377703bb6ce1
+2. https://web.stanford.edu/class/archive/cs/cs106b/cs106b.1126/handouts/220%20Huffman%20Encoding.pdf
+
