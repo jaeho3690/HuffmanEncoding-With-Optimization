@@ -17,7 +17,7 @@ For the Optimized version, I wasn't able to find any reference. There were paper
 4. We encode these words along with the ordinary Huffman Encoding scheme.
 5. We read the txt file word by word, and if the word is in the top_N_dictionary, we encode the whole word. If not, we encode as we would in an ordinary Huffman Encoding.
 
-Somethings to note is that the optimal value of "N" would differ by txt files. A bigger number of N does not guarantee the performance of the optimization. However, I have noticed that txt files that are longer usually need an N that is bigger than 200. Increasing this number may result in increased memory usage, so we must be careful of the tradeoff. In my implementation, I have chosen the N =200 for file size above 100kb, and N=50 otherwise.
+Some things to note is that the optimal value of "N" would differ by txt files. A bigger number of N does not guarantee the performance of the optimization. However, I have noticed that txt files that are longer usually need an N that is bigger than 200. Increasing this number may result in increased memory usage, so we must be careful of the tradeoff. In my implementation, I have chosen the N =200 for file size above 100kb, and N=50 otherwise.
 
 # File Structure
 The file structure is as below
